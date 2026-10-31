@@ -1,0 +1,17 @@
+{
+  "name": "servicehub",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "express": "^5.3.0",
+    "mongoose": "^9.11.2"
+  }
+}
