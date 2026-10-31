@@ -1,11 +1,13 @@
 const express = require("express");
 const connectDB = require("./config/db");
 const customerRoutes = require("./routes/customerRoutes")
+const repairRoutes = require("./routes/repairRoutes");
 
 const app = express();
 
 app.use(express.json())
 app.use("/api/customers" , customerRoutes);
+app.use("/api/customers", repairRoutes);
 
 app.get("/", (req, res) => {
   res.send("Welcome to the ServiceHub API");
