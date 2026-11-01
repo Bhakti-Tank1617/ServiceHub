@@ -89,6 +89,40 @@ const getRepairsByCustomer = async (req, res) => {
     }
 }; 
 
+const getRepairById = async (req, res) => {
+    try {
+        const { repairId } = req.params;
+
+        if (!mongoose.isValidObjectId(repairId)) {
+            return res.status(400).json({
+                success: false,
+                message: "Invalid repair ID"
+            });
+        }
+
+        const repair = await Repair.findById(repairId);
+
+        if (!repair) {
+            return res.status(404).json({
+                success: false,
+                message: "Repair not found"
+            });
+   
+        }
+
+        res.status(200).json({
+            success: true,
+            data: repair
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: "Failed to fetch repair"
+        });
+    }
+};
+
 module.exports = { createRepair,
-     getRepairsByCustomer
+     getRepairsByCustomer,
+     getRepairById
 };
