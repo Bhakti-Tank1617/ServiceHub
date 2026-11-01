@@ -202,10 +202,43 @@ const deleteRepair = async (req, res) => {
     }
 };
 
+const assignTechnician = async (req, res) => {
+    try {
+        const { repairId } = req.params;
+        const { technician } = req.body;
+
+        if (!mongoose.Types.ObjectId.isValid(repairId)) {
+            return res.status(400).json({ message: "Invalid repair ID" });
+        }
+
+        if (typeof technician !== "string" || !technician.trim()) {
+            return res.status(400).json({ message: "Technician name is required" });
+        }
+
+        const repair = await Repair.findByIdAndUpdate(
+            repairId,
+            { technician: technician.trim() },
+            { new: true, runValidators: true }
+        );
+
+        if (!repair) {
+            return res.status(404).json({ message: "Repair not found" });
+        }
+
+        res.status(200).json({
+            message: "Technician assigned successfully",
+            repair
+        });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
 module.exports = { createRepair,
      getRepairsByCustomer,
      getRepairById,
      updateRepairStatus,
-     deleteRepair
+     deleteRepair,
+     assignTechnician
 
 };
