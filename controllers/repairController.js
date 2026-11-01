@@ -2,6 +2,8 @@ const mongoose = require("mongoose");
 const Repair = require("../models/Repair");
 const Customer = require("../models/Customer");
 
+
+
 const createRepair = async (req, res) => {
   try {
     const { customerId } = req.params;
@@ -82,13 +84,25 @@ const getRepairsByCustomer = async (req, res) => {
       filter.status = status;
     }
 
-    const repairs = await Repair.find(filter).sort({ createdAt: -1 });
-    
+    const page = Math.max(1, parseInt(req.query.page, 10) || 1);
+const limit = Math.max(1, Math.min(50, parseInt(req.query.limit, 10) || 10));
+const skip = (page - 1) * limit;
+
+const repairs = await Repair.find(filter)
+    .sort({ createdAt: -1 })
+    .skip(skip)
+    .limit(limit);
+
+const total = await Repair.countDocuments(filter);
+
     res.status(200).json({
-      success: true,
-      count: repairs.length,
-      data: repairs,
-    });
+    success: true,
+    count: repairs.length,
+    total,
+    page,
+    totalPages: Math.ceil(total / limit),
+    data: repairs
+});
   } catch (error) {
     res.status(500).json({
       success: false,
