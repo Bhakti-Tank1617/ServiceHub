@@ -175,9 +175,37 @@ const updateRepairStatus = async (req, res) => {
     }
 };
 
+const deleteRepair = async (req, res) => {
+    try {
+        // Get the repair ID from the URL
+        const { repairId } = req.params;
+
+        // Check whether the ID is a valid MongoDB ObjectId
+        if (!mongoose.Types.ObjectId.isValid(repairId)) {
+            return res.status(400).json({ message: "Invalid repair ID" });
+        }
+
+        // Find the repair and delete it
+        const repair = await Repair.findByIdAndDelete(repairId);
+
+        // If no repair was found, return 404
+        if (!repair) {
+            return res.status(404).json({ 
+                message: "Repair not found"
+             });
+        }
+
+        // Confirm that the repair was deleted
+        res.status(200).json({ message: "Repair deleted successfully" });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
 module.exports = { createRepair,
      getRepairsByCustomer,
      getRepairById,
-     updateRepairStatus
+     updateRepairStatus,
+     deleteRepair
 
 };
