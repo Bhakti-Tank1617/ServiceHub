@@ -13,15 +13,22 @@ const createCustomer = async (req, res) => {
     }
 
     if (
-  email !== undefined &&
-  (typeof email !== "string" ||
-    !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim()))
-) {
-  return res.status(400).json({
-    success: false,
-    message: "Please provide a valid email",
-  });
-}
+      email !== undefined &&
+      (typeof email !== "string" ||
+        !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim()))
+    ) {
+      return res.status(400).json({
+        success: false,
+        message: "Please provide a valid email",
+      });
+    }
+
+    if (typeof phone !== "string" || !/^[6-9]\d{9}$/.test(phone.trim())) {
+      return res.status(400).json({
+        success: false,
+        message: "Phone must be a valid 10-digit Indian mobile number",
+      });
+    }
 
     const customer = await Customer.create({
       name,
@@ -131,7 +138,19 @@ const updateCustomer = async (req, res) => {
     ) {
       return res.status(400).json({
         success: false,
-        message: "Name and phone must be non-empty strings,and email must be valid ",
+        message:
+          "Name and phone must be non-empty strings,and email must be valid ",
+      });
+    }
+
+    if (
+      "phone" in updates &&
+      (typeof updates.phone !== "string" ||
+        !/^[6-9]\d{9}$/.test(updates.phone.trim()))
+    ) {
+      return res.status(400).json({
+        success: false,
+        message: "Phone must be a valid 10-digit Indian mobile number",
       });
     }
 
