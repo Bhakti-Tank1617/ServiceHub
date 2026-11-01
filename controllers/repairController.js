@@ -74,7 +74,8 @@ const getRepairsByCustomer = async (req, res) => {
             });
         }
 
-        const repairs = await Repair.find({ customer: customerId });
+        const repairs = await Repair.find({ customer: customerId })
+        .sort({ createdAt: -1 });
 
         res.status(200).json({
             success: true,
