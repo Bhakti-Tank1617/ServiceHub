@@ -78,14 +78,37 @@ const getRepairsByCustomer = async (req, res) => {
 
     const { status } = req.query;
 
+    const allowedStatuses = [
+    "Received",
+    "Diagnosing",
+    "In Progress",
+    "Ready",
+    "Delivered"
+];
+
+if (status && !allowedStatuses.includes(status)) {
+    return res.status(400).json({
+        message: "Invalid status. Use Received, Diagnosing, In Progress, Ready, or Delivered."
+    });
+}
+
     const filter = { customer: customerId };
 
     if (status) {
       filter.status = status;
     }
 
-    const page = Math.max(1, parseInt(req.query.page, 10) || 1);
-const limit = Math.max(1, Math.min(50, parseInt(req.query.limit, 10) || 10));
+    const page = Number(req.query.page ?? 1);
+const limit = Number(req.query.limit ?? 10);
+
+if (!Number.isInteger(page) || page < 1) {
+    return res.status(400).json({ message: "Page must be a positive integer" });
+}
+
+if (!Number.isInteger(limit) || limit < 1 || limit > 50) {
+    return res.status(400).json({ message: "Limit must be between 1 and 50" });
+}
+
 const skip = (page - 1) * limit;
 
 const repairs = await Repair.find(filter)
