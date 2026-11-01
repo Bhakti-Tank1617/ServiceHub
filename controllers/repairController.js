@@ -100,8 +100,7 @@ const getRepairById = async (req, res) => {
             });
         }
 
-        const repair = await Repair.findById(repairId);
-
+      const repair = await Repair.findById(repairId).populate("customer");
         if (!repair) {
             return res.status(404).json({
                 success: false,
