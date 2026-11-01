@@ -122,7 +122,62 @@ const getRepairById = async (req, res) => {
     }
 };
 
+const updateRepairStatus = async (req, res) => {
+    try {
+        const { repairId } = req.params;
+        const { status } = req.body;
+
+        if (!mongoose.isValidObjectId(repairId)) {
+            return res.status(400).json({
+                success: false,
+                message: "Invalid repair ID"
+            });
+        }
+
+        const allowedStatuses = [
+            "Received",
+            "Diagnosing",
+            "In Progress",
+            "Ready",
+            "Delivered"
+        ];
+
+        if (!allowedStatuses.includes(status)) {
+            return res.status(400).json({
+                success: false,
+                message: "Invalid repair status"
+            });
+        }
+
+        const repair = await Repair.findByIdAndUpdate(
+            repairId,
+            { status },
+            { new: true, runValidators: true }
+        );
+
+        if (!repair) {
+            return res.status(404).json({
+                success: false,
+                message: "Repair not found"
+            });
+        }
+
+        res.status(200).json({
+            success: true,
+            message: "Repair status updated successfully",
+            data: repair
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: "Failed to update repair status"
+        });
+    }
+};
+
 module.exports = { createRepair,
      getRepairsByCustomer,
-     getRepairById
+     getRepairById,
+     updateRepairStatus
+
 };
